@@ -1,5 +1,9 @@
+#ifndef CHESS_ROOK_KING_HEADER_H
+#define CHESS_ROOK_KING_HEADER_H
+
 #define SIZE 8
-enum type { empty, pawn, knight, bishop, rook, queen, king };
+
+enum type { empty, rook, king };
 enum color { black, white };
 enum bool{ false, true };
 
@@ -30,7 +34,16 @@ struct undo
 struct piece
 {
     weight(*weight)(struct position pos);
-    enum bool (*valid_move)(struct move move);              /// undo_eval better name
+    enum bool (*valid_move)(struct move move);
     void(*play_move)(struct move* move, struct undo* taken, int* undo_move, enum bool is_human);
     enum bool (*enum_move)(struct position* pos, struct move* move); // pos!=0 for the first move
 };
+
+typedef struct chess_board_less_memory //typicaly for a chess board are need 64 ints but this way only 14 are needed
+{
+    unsigned long long piece[2];// rook, 0 - queen, 1 - king
+    unsigned long long color;// at first every piece is black by default
+} codeBoard;
+
+
+#endif //CHESS_ROOK_KING_HEADER_H
