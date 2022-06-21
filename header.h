@@ -45,5 +45,17 @@ typedef struct chess_board_less_memory //typicaly for a chess board are need 64 
     unsigned long long color;// at first every piece is black by default
 } codeBoard;
 
+struct queue
+{
+    codeBoard board;
+    struct queue *next;
+};
+
+///global variables
+extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[2];
+extern int move_cnt;
+extern struct queue *played_boards;
 
 #endif //CHESS_ROOK_KING_HEADER_H
