@@ -78,4 +78,18 @@ struct queue * pop_element(struct queue *head)
     return new_head;/// return the address of the new head
 }
 
+void print_board(struct square board[8][8]);
+
+void print_game(struct queue *game_positions) /// the head of the queue is the first position 
+{
+    for (struct queue *iterator = game_positions; iterator ;iterator = iterator->next) /// the final element next (iterator->next) is always = NULL
+    {
+        codeBoard curr_board_coded = game_positions->board;
+        struct square board_decoded[SIZE][SIZE]; 
+    
+        decode_board(board_decoded, curr_board_coded); /// decrypt board 
+        print_board(board_decoded); 
+    }
+}
+
 
