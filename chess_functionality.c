@@ -36,9 +36,7 @@ void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory
                     empty_board[y][x].type = i + 1;
                     board.piece[i] -= n;
                 }
-
             }
-
     }
 
     for (int y = 7; y >= 0; y--)
@@ -53,11 +51,9 @@ void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory
         }
 }
 
-///----------------------------------------------------------------------- start not tested
-
 struct queue * add_element(struct queue *head, codeBoard new_board)
 {
-    struct queue *new_element =  malloc(sizeof new_element); /// create the new element
+    struct queue *new_element = malloc(sizeof *new_element); /// create the new element
     if(!new_element) return NULL; /// check if the malloc is successful if not return NULL
 
     new_element->next = NULL; ///making the next null because the the address is somewhere we can t touch
@@ -65,8 +61,8 @@ struct queue * add_element(struct queue *head, codeBoard new_board)
     if(!head) return new_element; ///if the first element doesnt exist than initialize it and return it
 
     struct queue *start = head; ///else loop through the queue and add the new element to the end
-    for(;head;head = head->next);
-    head = new_element;
+    for(;head->next;head = head->next);
+    head->next = new_element;
 
     return start; /// return the start of the queue
 }
@@ -82,4 +78,4 @@ struct queue * pop_element(struct queue *head)
     return new_head;/// return the address of the new head
 }
 
-///------------------------------------------------------------------------ end
+
