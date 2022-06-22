@@ -8,8 +8,8 @@ void code_board(struct chess_board_less_memory* empty_board, struct square board
 {
     for (int i = 0; i < 2; empty_board->piece[i++] = 0);
     empty_board->color = 0;
+    
     for (int y = 0; y < 8; y++)
-    {
         for (int x = 0; x < 8; x++)
         {
             unsigned long long n = pow(2, y * 8 + x);
@@ -19,14 +19,12 @@ void code_board(struct chess_board_less_memory* empty_board, struct square board
                 empty_board->color += board[y][x].color * n;
             }
         }
-    }
 }
 
 
 void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory board)
 {
     for (int i = 0; i < 2; i++)
-    {
         for (int y = 7; y >= 0; y--)
             for (int x = 7; x >= 0; x--)
             {
@@ -37,8 +35,7 @@ void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory
                     board.piece[i] -= n;
                 }
             }
-    }
-
+    
     for (int y = 7; y >= 0; y--)
         for (int x = 7; x >= 0; x--)
         {
@@ -80,15 +77,15 @@ struct queue * pop_element(struct queue *head)
 
 void print_board(struct square board[8][8]);
 
-void print_game(struct queue *game_positions) /// the head of the queue is the first position 
+void print_game(struct queue *game_positions) /// the head of the queue is the first position
 {
     for (struct queue *iterator = game_positions; iterator ;iterator = iterator->next) /// the final element next (iterator->next) is always = NULL
     {
         codeBoard curr_board_coded = game_positions->board;
-        struct square board_decoded[SIZE][SIZE]; 
-    
-        decode_board(board_decoded, curr_board_coded); /// decrypt board 
-        print_board(board_decoded); 
+        struct square board_decoded[SIZE][SIZE];
+
+        decode_board(board_decoded, curr_board_coded); /// decrypt board
+        print_board(board_decoded);
     }
 }
 
