@@ -54,7 +54,7 @@ struct queue
 ///global variables
 extern long long global_evaluation;
 extern struct square board[8][8];
-extern struct piece piece[2];
+extern struct piece piece[3];
 extern int move_cnt;
 extern struct queue *played_boards;
 

@@ -3,7 +3,7 @@
 long long global_evaluation;
 int move_cnt;
 struct square board[8][8];
-struct piece piece[2];
+struct piece piece[3];
 
 void undo_move(struct move *move, struct undo *undo, const int *undo_eval);
 

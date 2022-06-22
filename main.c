@@ -4,7 +4,7 @@
 long long global_evaluation = 0;
 int move_cnt = 0;
 struct square board[8][8];
-struct piece piece[2];
+struct piece piece[3];
 struct queue *played_boards;
 
 char getPiece(struct square p)
@@ -48,8 +48,16 @@ void print_board(struct square board[8][8])
     printf("\n"); printf("\n");
 }
 
+struct queue * add_element(struct queue *head, struct square new_board[8][8]);
+struct queue * pop_element(struct queue *head);
+void print_game(struct queue *game_positions);
+enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
+
 
 int main()
 {
+
+
+
     return 0;
 }

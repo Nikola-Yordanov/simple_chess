@@ -8,7 +8,7 @@ void code_board(struct chess_board_less_memory* empty_board, struct square board
 {
     for (int i = 0; i < 2; empty_board->piece[i++] = 0);
     empty_board->color = 0;
-    
+
     for (int y = 0; y < 8; y++)
         for (int x = 0; x < 8; x++)
         {
@@ -20,7 +20,6 @@ void code_board(struct chess_board_less_memory* empty_board, struct square board
             }
         }
 }
-
 
 void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory board)
 {
@@ -35,7 +34,7 @@ void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory
                     board.piece[i] -= n;
                 }
             }
-    
+
     for (int y = 7; y >= 0; y--)
         for (int x = 7; x >= 0; x--)
         {
@@ -48,13 +47,13 @@ void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory
         }
 }
 
-struct queue * add_element(struct queue *head, codeBoard new_board)
+struct queue * add_element(struct queue *head, struct square new_board[8][8])
 {
     struct queue *new_element = malloc(sizeof *new_element); /// create the new element
     if(!new_element) return NULL; /// check if the malloc is successful if not return NULL
 
     new_element->next = NULL; ///making the next null because the the address is somewhere we can t touch
-    new_element->board = new_board;
+    code_board(&new_element->board, new_board);
     if(!head) return new_element; ///if the first element doesnt exist than initialize it and return it
 
     struct queue *start = head; ///else loop through the queue and add the new element to the end
