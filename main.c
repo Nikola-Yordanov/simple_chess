@@ -1,115 +1,30 @@
-#include <malloc.h>
-
-#define SIZE 8
-enum type { empty, rook, king };
-enum color { black, white };
-enum bool{ false, true };
-
-struct square
-{
-    enum type type;
-    enum color color;
-};
-
-struct position
-{
-    int x, y;
-};
-
-struct move
-{
-    struct position from, to;
-};
-
-typedef unsigned weight;
-
-struct undo
-{
-    enum type taken;
-    int has_been_moved;
-};
-
-struct piece
-{
-    weight(*weight)(struct position pos);
-    enum bool (*valid_move)(struct move move);              /// undo_eval better name
-    void(*play_move)(struct move* move, struct undo* taken, int* undo_move, enum bool is_human);
-    enum bool (*enum_move)(struct position* pos, struct move* move); // pos!=0 for the first move
-};
-
 #include<stdio.h>
-#include<math.h>
+#include "header.h"
+#include <time.h>
+#include <stdlib.h>
 
-typedef struct chess_board_less_memory //typicaly for a chess board are need 64 ints but this way only 14 are needed
-{
-    unsigned long long piece[2];//, 0 - pawn, 1 - knight, 2 - bishop, 3 - rook, 4 - queen, 5 - king
-    unsigned long long color;// at first every piece is black by default
-} codeBoard;
+long long global_evaluation = 0;
+int move_cnt = 0;
+struct square board[8][8];
 
-void code_board(struct chess_board_less_memory* empty_board, struct square board[8][8])     // random seed
+struct queue *played_boards;
+
+
+void fill_board()
 {
-    for (int i = 0; i < 2; empty_board->piece[i++] = 0);
-    empty_board->color = 0;
-    for (int y = 0; y < 8; y++)
-    {
-        for (int x = 0; x < 8; x++)
-        {
-            unsigned long long n = pow(2, y * 8 + x);
-            if (board[y][x].type)
-            {
-                empty_board->piece[board[y][x].type - 1] += n;// board[y][x].type - 1 because we don't need arr for empty
-                empty_board->color += board[y][x].color * n;
-            }
-        }
-    }
+    for(int i = 0;i < SIZE;i++)
+        for(int j = 0;j < SIZE;j++)
+            board[i][j].type = empty;
+
+    board[1][1].type = king;
+    board[1][2].type = rook;
+
+    board[5][5].type = king;
+    board[6][6].type = rook;
+    board[5][5].color = white;
+    board[6][6].color = white;
 }
 
-
-void decode_board(struct square(*empty_board)[8], struct chess_board_less_memory board)
-{
-    for (int i = 0; i < 2; i++)
-    {
-        for (int y = 7; y >= 0; y--)
-            for (int x = 7; x >= 0; x--)
-            {
-                unsigned long long n = pow(2, y * 8 + x);
-                if (n <= board.piece[i])
-                {
-                    empty_board[y][x].type = i + 1;
-                    board.piece[i] -= n;
-                }
-
-            }
-
-    }
-
-    for (int y = 7; y >= 0; y--)
-        for (int x = 7; x >= 0; x--)
-        {
-            unsigned long long n = pow(2, y * 8 + x);
-            if (n <= board.color)
-            {
-                empty_board[y][x].color = white;
-                board.color -= n;
-            }
-        }
-
-}
-
-
-void fill_board(struct square(*board)[8])
-{
-    for (int y = 0; y < 8; y++)
-        for (int x = 0; x < 8; x++)
-            board[y][x].type = empty;
-
-    board[0][4].type = board[7][4].type = king;
-    board[0][4].color = black;
-    board[7][4].color = white;
-    board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
-    board[0][0].color = board[0][7].color = black;
-    board[7][0].color = board[7][7].color = white;
-}
 
 char getPiece(struct square p)
 {
@@ -152,45 +67,135 @@ void print_board(struct square board[8][8])
     printf("\n"); printf("\n");
 }
 
-void add_to_codeBoard(codeBoard coded, codeBoard* arr, int curr_index)
+void move_piece(enum color color)
 {
-    arr[curr_index] = coded;
-}
+    struct position from, to;
 
-void add_curr_board_to_coded(struct square board[8][8], codeBoard* arr, int curr_index)
-{
-    codeBoard new_board;
-    code_board(&new_board, board);
-    add_to_codeBoard(new_board, arr, curr_index);
+    back:;
+    printf("Enter cords of the piece you want to move:\n");
+    scanf("%d", &from.x);
+    scanf("%d", &from.y);
 
-}
-
-void print_codes(codeBoard* arr, int size)
-{
-    struct square printer[8][8];
-    for (int i = 0; i < size; i++)
+    if (board[from.y][from.x].type == empty || board[from.y][from.x].color != color)
     {
-        decode_board(printer, arr[i]);
-        print_board(printer);
+        printf("Wrong cords!\n");
+        goto back;
     }
+
+    struct move move = {from, from};
+    if(!piece[board[from.y][from.x].type].enum_move(&from, &move))
+    {
+        printf("This piece has no possible moves!\n");
+        goto back;
+    }
+
+    back1:;
+    printf("Enter where you want to move the piece:\n");
+    scanf("%d", &to.x);
+    scanf("%d", &to.y);
+
+    move.from = from;
+    move.to = to;
+    if(!piece[board[from.y][from.x].type].valid_move(move))
+    {
+        printf("This move is not valid!\n");
+        goto back1;
+    }
+
+    struct undo taken;
+    int undo_move;
+    piece[board[from.y][from.x].type].play_move(&move, &taken, &undo_move);
+    board[from.y][from.x].type = empty;
 }
+
+
+int timeout ( int seconds )
+{
+    clock_t endwait;
+    endwait = clock () + seconds * CLOCKS_PER_SEC ;
+    while (clock() < endwait) {}
+    return  1;
+}
+
+struct queue * add_element(struct queue *head, struct square new_board[8][8]);
+struct queue * clear_queue(struct queue * queue);
+void print_game(struct queue *game_positions);
+enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
 int main()
 {
-    struct square board[8][8];
-    fill_board(board);
-    // print_board(board);
-    struct chess_board_less_memory new_board;
-    code_board(&new_board, board);
-    //struct square old_new_board[8][8];
-    //decode_board(old_new_board, new_board);
-    //print_board(old_new_board);
+    struct move move;
+    struct undo undo;
+    int eval = 0, depth, mode, alpha = -1e8, beta = 1e8, turn;
+    system("cls");
+    printf("                                                      CHESS               \n\n"
+           "Information:\n"
+           "The figures that you will be playing with will always be small letters.\n\n"
+           "List of figures are:\n"
+           "k - King\n"
+           "r - Rook\n"
+           "Press Any Key To Continue...");
+    printf("Please choose your level:\n"
+           "0  - New to Chess\n"
+           "2 - Beginner\n"
+           "4 - Intermediate\n"
+           "6 - Grandmaster / Advanced\n\n\n");
+    Enter:;
+    printf("Enter: ");
 
-    codeBoard all_boards[100]; int curr_index = 0;
-    add_to_codeBoard(new_board, all_boards, curr_index++);
+    scanf("%d", &depth);
 
-    print_codes(all_boards, curr_index);
+    turn1:;
+    printf("Please choose piece color\n"
+           "0 - Black\n"
+           "1 - White\n");
+
+    scanf("%d", &turn);
+
+    if (turn != 0 && turn != 1)
+    {
+        printf("Invalid color, please choose again!\n");
+        goto turn1;
+    }
+
+
+    fill_board();
+    while (true)
+    {
+        played_boards = add_element(played_boards, board);
+        if (global_evaluation >= 1e6)
+        {
+            printf("White wins!!!\n");
+            break;
+        }
+
+        if (global_evaluation <= -1e6)
+        {
+            printf("Black wins!!!\n");
+            break;
+        }
+
+        printf(turn ? "White\n" : "Black\n");
+        print_board(board);
+
+        if (turn)
+            move_piece(turn);
+
+        else
+        {
+            int undo_eval;
+            find_best_move(&move, &eval, turn, depth, alpha, beta);
+            piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
+            printf("%d, %d , %d, %d", move.from.x, move.from.y, move.to.x, move.to.y);
+        }
+        printf("depth = %d\n", depth);
+        move_cnt++;
+        turn = !turn;
+
+    }
+
+    print_game(played_boards);
+    played_boards = clear_queue(played_boards);
 
     return 0;
-
 }

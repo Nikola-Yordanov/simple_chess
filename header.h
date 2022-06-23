@@ -35,7 +35,7 @@ struct piece
 {
     weight(*weight)(struct position pos);
     enum bool (*valid_move)(struct move move);
-    void(*play_move)(struct move* move, struct undo* taken, int* undo_move, enum bool is_human);
+    void(*play_move)(struct move* move, struct undo* taken, int* undo_move);
     enum bool (*enum_move)(struct position* pos, struct move* move); // pos!=0 for the first move
 };
 
@@ -45,5 +45,16 @@ typedef struct chess_board_less_memory //typicaly for a chess board are need 64 
     unsigned long long color;// at first every piece is black by default
 } codeBoard;
 
+struct queue
+{
+    codeBoard board;
+    struct queue *next;
+};
+
+///global variables
+extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[3];
+extern int move_cnt;
 
 #endif //CHESS_ROOK_KING_HEADER_H
