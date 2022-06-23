@@ -1,9 +1,4 @@
 #include "header.h"
-#include<stdio.h>
-
-long long global_evaluation;
-int move_cnt;
-struct square board[8][8];
 
 int mod(int a){return a < 0 ? -a : a;}
 
@@ -156,13 +151,13 @@ void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
     to->color = !from->color;
 }
 
-void generic_play_move(struct move *move, struct undo *undo, int *undo_eval, enum bool is_human)
+void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
 {
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    int eval = 0;/// need to calculate evaluation
+    int eval = piece[undo->taken].weight(move->to);/// need to calculate evaluation
 
     if (to->color == black) eval *= -1;
     *undo_eval = eval;

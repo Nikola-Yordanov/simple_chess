@@ -6,8 +6,6 @@
 long long global_evaluation = 0;
 int move_cnt = 0;
 struct square board[8][8];
-struct piece piece[3];
-struct queue *played_boards;
 
 void fill_board()
 {
@@ -103,7 +101,7 @@ void move_piece(enum color color)
 
     struct undo taken;
     int undo_move;
-    piece[board[from.y][from.x].type].play_move(&move, &taken, &undo_move, 1);
+    piece[board[from.y][from.x].type].play_move(&move, &taken, &undo_move);
     board[from.y][from.x].type = empty;
 }
 
@@ -120,7 +118,6 @@ struct queue * add_element(struct queue *head, struct square new_board[8][8]);
 struct queue * pop_element(struct queue *head);
 void print_game(struct queue *game_positions);
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
-
 
 int main()
 {
@@ -158,32 +155,38 @@ int main()
         goto turn1;
     }
 
-    mode_try:;
-
-    printf("Enter mode: \n 1 for bot vs you \n 2 for bot vs bot \n 3 for you and your friend \n");
-    scanf("%d", &mode);
-
-    if(mode != 1 && mode != 2 && mode != 3)
-    {
-        printf("Invalid mode, please choose again!\n");
-        goto mode_try;
-    }
 
     fill_board();
-
-    if(mode == 1)
+    while (true)
     {
+        if (global_evaluation >= 1e6)
+        {
+            printf("White wins!!!\n");
+            break;
+        }
 
-    }
+        if (global_evaluation <= -1e6)
+        {
+            printf("Black wins!!!\n");
+            break;
+        }
 
-    if(mode == 2)
-    {
+        printf(turn ? "White\n" : "Black\n");
+        print_board(board);
 
-    }
+        if (turn)
+            move_piece(turn);
 
-    if(mode == 3)
-    {
-
+        else
+        {
+            int undo_eval;
+            find_best_move(&move, &eval, turn, depth, alpha, beta);
+            piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
+            printf("%d, %d , %d, %d", move.from.x, move.from.y, move.to.x, move.to.y);
+        }
+        printf("depth = %d\n", depth);
+        move_cnt++;
+        turn = !turn;
     }
 
     return 0;

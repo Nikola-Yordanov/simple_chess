@@ -35,7 +35,7 @@ struct piece
 {
     weight(*weight)(struct position pos);
     enum bool (*valid_move)(struct move move);
-    void(*play_move)(struct move* move, struct undo* taken, int* undo_move, enum bool is_human);
+    void(*play_move)(struct move* move, struct undo* taken, int* undo_move);
     enum bool (*enum_move)(struct position* pos, struct move* move); // pos!=0 for the first move
 };
 
