@@ -6,8 +6,7 @@
 long long global_evaluation = 0;
 int move_cnt = 0;
 struct square board[8][8];
-
-struct queue *played_boards;
+struct queue *played_boards = NULL;
 
 
 void fill_board()
@@ -16,13 +15,17 @@ void fill_board()
         for(int j = 0;j < SIZE;j++)
             board[i][j].type = empty;
 
-    board[1][1].type = king;
-    board[1][2].type = rook;
+    board[0][0].type = rook;
+    board[0][4].type = king;
+    board[0][7].type = rook;
 
-    board[5][5].type = king;
-    board[6][6].type = rook;
-    board[5][5].color = white;
-    board[6][6].color = white;
+    board[7][4].type = king;
+    board[7][0].type = rook;
+    board[7][7].type = rook;
+
+    board[7][4].color = white;
+    board[7][0].color = white;
+    board[7][7].color = white;
 }
 
 

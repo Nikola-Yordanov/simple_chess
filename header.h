@@ -57,4 +57,5 @@ extern struct square board[8][8];
 extern struct piece piece[3];
 extern int move_cnt;
 
+
 #endif //CHESS_ROOK_KING_HEADER_H
