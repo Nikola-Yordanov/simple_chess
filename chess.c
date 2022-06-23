@@ -174,4 +174,4 @@ struct piece piece[] =
                 {empty_weight,  empty_valid_move,  empty_play_move,   empty_enum_move},
                 {rook_weight,   rook_valid_move,   generic_play_move, rook_enum_move},
                 {king_weight, king_valid_move, generic_play_move, king_enum_move}
-        };/// need to fix
+        };
