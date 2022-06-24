@@ -17,7 +17,7 @@ void print_game(struct node * head);
 void print_moves(struct node *head);
 void * get_copy_board_pointer(struct square board[SIZE][SIZE]);
 void *get_copy_move_pointer(struct move move);
-
+void print_end_game_state();
 
 void fill_board()
 {
@@ -172,17 +172,8 @@ int main()
     while (true)
     {
         add_to_queue(&played_boards, get_copy_board_pointer(board), CHESS_BOARD);
-        if (global_evaluation >= 1e6)
-        {
-            printf("White wins!!!\n");
+        if (global_evaluation >= 1e6 || global_evaluation <= -1e6)
             break;
-        }
-
-        if (global_evaluation <= -1e6)
-        {
-            printf("Black wins!!!\n");
-            break;
-        }
 
         printf(turn ? "White\n" : "Black\n");
         print_board(board);
@@ -207,6 +198,7 @@ int main()
         turn = !turn;
     }
 
+    print_end_game_state();
     print_game(played_boards);
     print_moves(played_moves);
     clear_queue(&played_boards);

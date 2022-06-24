@@ -146,3 +146,14 @@ void print_moves(struct node *head)
         printf("from (%d, %d) ------> to(%d, %d)\n", move->from.x, move->from.y, move->to.x, move->to.y);
     }
 }
+
+void print_end_game_state()
+{
+    if(global_evaluation >= 1e6)
+        printf("White won!!!\n");
+
+    if(global_evaluation <= -1e6)
+        printf("White won!!!\n");
+
+    printf("Game moves = %d\n\n\n", move_cnt);
+}
