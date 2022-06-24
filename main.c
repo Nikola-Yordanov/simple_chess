@@ -6,6 +6,18 @@
 long long global_evaluation = 0;
 int move_cnt = 0;
 struct square board[8][8];
+struct queue *played_boards = NULL;
+struct queue *played_moves = NULL;
+
+
+enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
+void add_to_queue(struct node ** head, void *p, enum item_type t);
+void clear_queue(struct node ** head);
+void print_game(struct node * head);
+void print_moves(struct node *head);
+void * get_copy_board_pointer(struct square board[SIZE][SIZE]);
+void *get_copy_move_pointer(struct move move);
+
 
 void fill_board()
 {
@@ -13,13 +25,17 @@ void fill_board()
         for(int j = 0;j < SIZE;j++)
             board[i][j].type = empty;
 
-    board[1][1].type = king;
-    board[1][2].type = rook;
+    board[0][0].type = rook;
+    board[0][4].type = king;
+    board[0][7].type = rook;
 
-    board[5][5].type = king;
-    board[6][6].type = rook;
-    board[5][5].color = white;
-    board[6][6].color = white;
+    board[7][4].type = king;
+    board[7][0].type = rook;
+    board[7][7].type = rook;
+
+    board[7][4].color = white;
+    board[7][0].color = white;
+    board[7][7].color = white;
 }
 
 
@@ -32,7 +48,7 @@ char getPiece(struct square p)
     return ' ';
 }
 
-void print_board(struct square board[8][8])
+void print_board(const struct square  (*board)[8])
 {
     printf("  X");
     for (int x = 0; x < 8; x++)
@@ -62,6 +78,14 @@ void print_board(struct square board[8][8])
     }
     printf("  Y  ");
     printf("\n"); printf("\n");
+}
+
+int timeout ( int seconds )
+{
+    clock_t endwait;
+    endwait = clock () + seconds * CLOCKS_PER_SEC ;
+    while (clock() < endwait) {}
+    return  1;
 }
 
 void move_piece(enum color color)
@@ -99,25 +123,13 @@ void move_piece(enum color color)
         goto back1;
     }
 
+    add_to_queue(&played_moves, get_copy_move_pointer(move), MOVE);
+
     struct undo taken;
     int undo_move;
     piece[board[from.y][from.x].type].play_move(&move, &taken, &undo_move);
     board[from.y][from.x].type = empty;
 }
-
-
-int timeout ( int seconds )
-{
-    clock_t endwait;
-    endwait = clock () + seconds * CLOCKS_PER_SEC ;
-    while (clock() < endwait) {}
-    return  1;
-}
-
-struct queue * add_element(struct queue *head, struct square new_board[8][8]);
-struct queue * pop_element(struct queue *head);
-void print_game(struct queue *game_positions);
-enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
 int main()
 {
@@ -159,6 +171,7 @@ int main()
     fill_board();
     while (true)
     {
+        add_to_queue(&played_boards, get_copy_board_pointer(board), CHESS_BOARD);
         if (global_evaluation >= 1e6)
         {
             printf("White wins!!!\n");
@@ -184,10 +197,19 @@ int main()
             piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
             printf("%d, %d , %d, %d", move.from.x, move.from.y, move.to.x, move.to.y);
         }
+
+        add_to_queue(&played_moves, get_copy_move_pointer(move), MOVE);
+
+
         printf("depth = %d\n", depth);
         move_cnt++;
+
         turn = !turn;
     }
+
+    print_game(played_boards);
+    print_moves(played_moves);
+    clear_queue(&played_boards);
 
     return 0;
 }

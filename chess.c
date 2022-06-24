@@ -1,6 +1,6 @@
 #include "header.h"
 
-int mod(int a){return a < 0 ? -a : a;}
+unsigned mod(int a) { return a < 0 ? -a : a; }
 
 weight rook_weight(struct position pos) { return 500; }
 
@@ -141,6 +141,7 @@ enum bool empty_enum_move(struct position *pos, struct move *move) {return false
 
 void empty_play_move(struct move *move, struct undo *taken,  int *undo_eval, enum bool is_human) {  }
 
+int king_rook_mate(enum color on_move);
 
 void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
 {
@@ -157,8 +158,7 @@ void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    int eval = piece[undo->taken].weight(move->to);/// need to calculate evaluation
-
+    int eval = piece[undo->taken].weight(move->to) + king_rook_mate((move_cnt + 1) % 2);
     if (to->color == black) eval *= -1;
     *undo_eval = eval;
     global_evaluation += eval;
