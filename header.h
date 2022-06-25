@@ -28,7 +28,6 @@ typedef unsigned weight;
 struct undo
 {
     enum type taken;
-    int has_been_moved;
 };
 
 struct piece

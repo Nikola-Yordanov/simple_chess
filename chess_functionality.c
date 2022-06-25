@@ -60,7 +60,6 @@ struct square ** decode_board(struct chess_board_less_memory board)
 
 void print_board(const struct square  (*board)[8]);
 
-
 void * get_copy_board_pointer(const struct square  (*board)[8])
 {
     struct square (*empty_board)[SIZE] = malloc(sizeof (struct square[SIZE][SIZE]));

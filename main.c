@@ -10,7 +10,6 @@ struct square board[8][8];
 struct node *played_boards = NULL;
 struct node *played_moves = NULL;
 
-
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 void add_to_queue(struct node ** head, void *p, enum item_type t);
 void clear_queue(struct node ** head);
@@ -32,7 +31,6 @@ void fill_board()
     board[7][4].type = king;
     board[7][4].color = white;
 }
-
 
 char getPiece(struct square p)
 {
