@@ -1,12 +1,13 @@
 #include "header.h"
-
+#include <stdio.h>
 int max( int a, int b) { return  a > b ?  a : b; }
 unsigned mod_(int a) { return a < 0 ? -a : a; }
 
 int king_rook_mate(enum color on_move)
 {
+
     struct position white_king, black_king;
-    int white_color_piece = -1, black_color_piece = -1;
+    int white_color_piece = 0, black_color_piece = 0;
 
     for(int y = 0;y < SIZE;y++)
     {
@@ -23,8 +24,8 @@ int king_rook_mate(enum color on_move)
         }
     }
 
-    if((on_move == white && black_color_piece == 1 && white_color_piece > 1) ||
-       (on_move == black && white_color_piece == 1 && black_color_piece > 1)) {
+    if((on_move == black && black_color_piece == 1 && white_color_piece > 1) ||
+       (on_move == white && white_color_piece == 1 && black_color_piece > 1)) {
 
         struct position enemy_king = on_move == white ? black_king : white_king;
 
@@ -32,9 +33,9 @@ int king_rook_mate(enum color on_move)
                  enemy_king_center_x_dist = max(3 - enemy_king.x, enemy_king.x  - 4),
                  enemy_king_center_y_dist = max(3 - enemy_king.y, enemy_king.y  - 4),
                  enemy_king_dist_from_center = enemy_king_center_x_dist + enemy_king_center_y_dist,
-                evaluation = 3*SIZE - dist_btw_kings + enemy_king_dist_from_center;
+                evaluation = SIZE - dist_btw_kings + enemy_king_dist_from_center;
 
-        return evaluation * 10;
+        return evaluation;
     }
 
     return 0;

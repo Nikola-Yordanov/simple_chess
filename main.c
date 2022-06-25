@@ -27,15 +27,9 @@ void fill_board()
 
     board[0][0].type = rook;
     board[0][4].type = king;
-    board[0][7].type = rook;
 
     board[7][4].type = king;
-    board[7][0].type = rook;
-    board[7][7].type = rook;
-
     board[7][4].color = white;
-    board[7][0].color = white;
-    board[7][7].color = white;
 }
 
 
