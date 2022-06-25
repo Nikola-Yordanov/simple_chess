@@ -123,10 +123,13 @@ void pop_from_queue(struct node ** head)
 
 void clear_queue(struct node ** head)
 {
-    for(;*head;*head = (*head)->next)
+    while(true)
+    {
         pop_from_queue(head);
+        if(!(*head)) return;
+        *head = (*head)->next;
+    }
 }
-
 
 void print_game(struct node *head)
 {

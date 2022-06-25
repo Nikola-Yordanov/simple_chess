@@ -6,8 +6,9 @@
 long long global_evaluation = 0;
 int move_cnt = 0;
 struct square board[8][8];
-struct queue *played_boards = NULL;
-struct queue *played_moves = NULL;
+
+struct node *played_boards = NULL;
+struct node *played_moves = NULL;
 
 
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
@@ -74,14 +75,6 @@ void print_board(const struct square  (*board)[8])
     printf("\n"); printf("\n");
 }
 
-int timeout ( int seconds )
-{
-    clock_t endwait;
-    endwait = clock () + seconds * CLOCKS_PER_SEC ;
-    while (clock() < endwait) {}
-    return  1;
-}
-
 void move_piece(enum color color)
 {
     struct position from, to;
@@ -130,6 +123,7 @@ int main()
     struct move move;
     struct undo undo;
     int eval = 0, depth, mode, alpha = -1e8, beta = 1e8, turn;
+
     system("cls");
     printf("                                                      CHESS               \n\n"
            "Information:\n"
@@ -161,11 +155,13 @@ int main()
         goto turn1;
     }
 
+    enum color player_color = turn ? white : black, bot_color = turn ? black : white;
 
     fill_board();
     while (true)
     {
         add_to_queue(&played_boards, get_copy_board_pointer(board), CHESS_BOARD);
+
         if (global_evaluation >= 1e6 || global_evaluation <= -1e6)
             break;
 
@@ -173,17 +169,16 @@ int main()
         print_board(board);
 
         if (turn)
-            move_piece(turn);
+            move_piece(player_color);
 
         else
         {
             int undo_eval;
-            find_best_move(&move, &eval, turn, depth, alpha, beta);
+            find_best_move(&move, &eval, bot_color, depth, alpha, beta);
             piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
             printf("%d, %d , %d, %d", move.from.x, move.from.y, move.to.x, move.to.y);
+            add_to_queue(&played_moves, get_copy_move_pointer(move), MOVE);
         }
-
-        add_to_queue(&played_moves, get_copy_move_pointer(move), MOVE);
 
 
         printf("depth = %d\n", depth);
@@ -192,10 +187,12 @@ int main()
         turn = !turn;
     }
 
-    print_end_game_state();
     print_game(played_boards);
     print_moves(played_moves);
+
     clear_queue(&played_boards);
+    clear_queue(&played_moves);
+    print_end_game_state();
 
     return 0;
 }
