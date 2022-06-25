@@ -45,10 +45,22 @@ typedef struct chess_board_less_memory //typicaly for a chess board are need 64 
     unsigned long long color;// at first every piece is black by default
 } codeBoard;
 
-struct queue
+enum item_type {CHESS_BOARD, MOVE};
+
+struct item
 {
-    codeBoard board;
-    struct queue *next;
+    enum item_type type;
+    union
+    {
+        codeBoard *code_board;
+        struct move *move;
+    };
+};
+
+struct node
+{
+    struct node *next;
+    struct item *item;
 };
 
 ///global variables

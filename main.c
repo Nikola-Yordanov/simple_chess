@@ -6,8 +6,19 @@
 long long global_evaluation = 0;
 int move_cnt = 0;
 struct square board[8][8];
-struct queue *played_boards = NULL;
 
+struct node *played_boards = NULL;
+struct node *played_moves = NULL;
+
+
+enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
+void add_to_queue(struct node ** head, void *p, enum item_type t);
+void clear_queue(struct node ** head);
+void print_game(struct node * head);
+void print_moves(struct node *head);
+void * get_copy_board_pointer(struct square board[SIZE][SIZE]);
+void *get_copy_move_pointer(struct move move);
+void print_end_game_state();
 
 void fill_board()
 {
@@ -17,15 +28,9 @@ void fill_board()
 
     board[0][0].type = rook;
     board[0][4].type = king;
-    board[0][7].type = rook;
 
     board[7][4].type = king;
-    board[7][0].type = rook;
-    board[7][7].type = rook;
-
     board[7][4].color = white;
-    board[7][0].color = white;
-    board[7][7].color = white;
 }
 
 
@@ -38,7 +43,7 @@ char getPiece(struct square p)
     return ' ';
 }
 
-void print_board(struct square board[8][8])
+void print_board(const struct square  (*board)[8])
 {
     printf("  X");
     for (int x = 0; x < 8; x++)
@@ -105,31 +110,20 @@ void move_piece(enum color color)
         goto back1;
     }
 
+    add_to_queue(&played_moves, get_copy_move_pointer(move), MOVE);
+
     struct undo taken;
     int undo_move;
     piece[board[from.y][from.x].type].play_move(&move, &taken, &undo_move);
     board[from.y][from.x].type = empty;
 }
 
-
-int timeout ( int seconds )
-{
-    clock_t endwait;
-    endwait = clock () + seconds * CLOCKS_PER_SEC ;
-    while (clock() < endwait) {}
-    return  1;
-}
-
-struct queue * add_element(struct queue *head, struct square new_board[8][8]);
-struct queue * clear_queue(struct queue * queue);
-void print_game(struct queue *game_positions);
-enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
-
 int main()
 {
     struct move move;
     struct undo undo;
     int eval = 0, depth, mode, alpha = -1e8, beta = 1e8, turn;
+
     system("cls");
     printf("                                                      CHESS               \n\n"
            "Information:\n"
@@ -161,44 +155,44 @@ int main()
         goto turn1;
     }
 
+    enum color player_color = turn ? white : black, bot_color = turn ? black : white;
 
     fill_board();
     while (true)
     {
-        played_boards = add_element(played_boards, board);
-        if (global_evaluation >= 1e6)
-        {
-            printf("White wins!!!\n");
-            break;
-        }
+        add_to_queue(&played_boards, get_copy_board_pointer(board), CHESS_BOARD);
 
-        if (global_evaluation <= -1e6)
-        {
-            printf("Black wins!!!\n");
+        if (global_evaluation >= 1e6 || global_evaluation <= -1e6)
             break;
-        }
 
         printf(turn ? "White\n" : "Black\n");
         print_board(board);
 
         if (turn)
-            move_piece(turn);
+            move_piece(player_color);
 
         else
         {
             int undo_eval;
-            find_best_move(&move, &eval, turn, depth, alpha, beta);
+            find_best_move(&move, &eval, bot_color, depth, alpha, beta);
             piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
             printf("%d, %d , %d, %d", move.from.x, move.from.y, move.to.x, move.to.y);
+            add_to_queue(&played_moves, get_copy_move_pointer(move), MOVE);
         }
+
+
         printf("depth = %d\n", depth);
         move_cnt++;
-        turn = !turn;
 
+        turn = !turn;
     }
 
     print_game(played_boards);
-    played_boards = clear_queue(played_boards);
+    print_moves(played_moves);
+
+    clear_queue(&played_boards);
+    clear_queue(&played_moves);
+    print_end_game_state();
 
     return 0;
 }
