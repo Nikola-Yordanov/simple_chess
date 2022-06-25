@@ -14,7 +14,7 @@ struct chess_board_less_memory* code_board(const struct square (*board)[8])
     for (int y = 0; y < 8; y++)
         for (int x = 0; x < 8; x++)
         {
-            unsigned long long n = pow(2, y * 8 + x);
+            uint64_t n = pow(2, y * 8 + x);
             if (board[y][x].type)
             {
                 empty_board->piece[board[y][x].type - 1] += n;// board[y][x].type - 1 because we don't need arr for empty
@@ -37,7 +37,7 @@ struct square ** decode_board(struct chess_board_less_memory board)
         for (int y = 7; y >= 0; y--)
             for (int x = 7; x >= 0; x--)
             {
-                unsigned long long n = pow(2, y * 8 + x);
+                uint64_t n = pow(2, y * 8 + x);
                 if (n <= board.piece[i])
                 {
                     empty_board[y][x].type = i + 1;
@@ -48,7 +48,7 @@ struct square ** decode_board(struct chess_board_less_memory board)
     for (int y = 7; y >= 0; y--)
         for (int x = 7; x >= 0; x--)
         {
-            unsigned long long n = pow(2, y * 8 + x);
+            uint64_t n = pow(2, y * 8 + x);
             if (n <= board.color)
             {
                 empty_board[y][x].color = white;
@@ -59,7 +59,6 @@ struct square ** decode_board(struct chess_board_less_memory board)
 }
 
 void print_board(const struct square  (*board)[8]);
-
 
 void * get_copy_board_pointer(const struct square  (*board)[8])
 {

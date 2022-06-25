@@ -7,6 +7,9 @@ enum type { empty, rook, king };
 enum color { black, white };
 enum bool{ false, true };
 
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
 struct square
 {
     enum type type;
@@ -28,7 +31,6 @@ typedef unsigned weight;
 struct undo
 {
     enum type taken;
-    int has_been_moved;
 };
 
 struct piece
@@ -41,8 +43,8 @@ struct piece
 
 typedef struct chess_board_less_memory //typicaly for a chess board are need 64 ints but this way only 14 are needed
 {
-    unsigned long long piece[2];// rook, 0 - queen, 1 - king
-    unsigned long long color;// at first every piece is black by default
+    uint64_t piece[2];// rook, 0 - queen, 1 - king
+    uint64_t color;// at first every piece is black by default
 } codeBoard;
 
 enum item_type {CHESS_BOARD, MOVE};
@@ -61,6 +63,21 @@ struct node
 {
     struct node *next;
     struct item *item;
+};
+
+
+struct hash_item
+{
+    uint64_t zobrist_key;
+    int alpha, beta;
+    struct move best_move;
+    int position_evaluation;
+};
+
+struct hash_table
+{
+    uint32_t table_size, used;
+    struct hash_item **array;
 };
 
 ///global variables

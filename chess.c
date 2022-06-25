@@ -150,13 +150,15 @@ void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
     to->color = !from->color;
 }
 
+weight king_rook_mate(enum color color);
+
 void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
 {
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    int eval = piece[undo->taken].weight(move->to);
+    int eval = piece[undo->taken].weight(move->to) + king_rook_mate(move_cnt % 2);
     if (to->color == black) eval *= -1;
     *undo_eval = eval;
     global_evaluation += eval;

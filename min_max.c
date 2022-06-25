@@ -69,3 +69,8 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
     *out_eval = best_eval;
     return true;
 }
+
+unsigned long long zobrist_hash_function(const struct square (*board)[SIZE])
+{
+
+}
