@@ -38,6 +38,7 @@ struct chess_board_less_memory* code_board(const struct square (*board)[8])
 struct square ** decode_board(struct chess_board_less_memory board)
 {
     struct square (*empty_board)[SIZE] = malloc(sizeof (struct square[SIZE][SIZE]));
+    if(!empty_board) return NULL;
 
     for(int y = 0;y < SIZE;y++)
         for(int x = 0;x < SIZE;x ++)
@@ -152,10 +153,18 @@ void print_game(struct node *head)
 
 void print_moves(struct node *head)
 {
+    int turn = 0;
     for(struct node *iterator = head;iterator;iterator = iterator->next)
     {
         struct move * move = iterator->item->move;
-        printf("from (%d, %d) ------> to(%d, %d)\n", move->from.x, move->from.y, move->to.x, move->to.y);
+        printf("from (%d, %d) ------> to(%d, %d) ", move->from.x, move->from.y, move->to.x, move->to.y);
+
+        if(turn  % 2 == 0)
+            printf("White\n");
+        else
+            printf("Black\n");
+
+        turn = !turn;
     }
 }
 
@@ -165,7 +174,7 @@ void print_end_game_state()
         printf("White won!!!\n");
 
     if(global_evaluation <= -1e6)
-        printf("White won!!!\n");
+        printf("Black won!!!\n");
 
     printf("Game moves = %d\n\n\n", move_cnt);
 }

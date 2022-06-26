@@ -151,7 +151,7 @@ void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
 }
 
 weight king_rook_mate(enum color color);
-weight evaluate_piece_move(struct position *pos);
+weight evaluate_piece_move(const struct position *pos);
 
 
 void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
