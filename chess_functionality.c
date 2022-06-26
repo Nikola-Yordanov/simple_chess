@@ -1,7 +1,17 @@
 #include "header.h"
 #include <malloc.h>
 #include<stdio.h>
-#include<math.h>
+
+unsigned long long pow(int a, int x)
+{
+    unsigned long long out = a;
+
+    for(int i = 0;i < x - 1;i++)
+        out*=a;
+
+    return out;
+}
+
 
 struct chess_board_less_memory* code_board(const struct square (*board)[8])
 {

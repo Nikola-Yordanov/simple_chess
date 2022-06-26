@@ -1,3 +1,3 @@
-C:/Users/fedar/CLionProject/chess_rook_king/cmake-build-debug/CMakeFiles/chess_rook_king.dir
-C:/Users/fedar/CLionProject/chess_rook_king/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/fedar/CLionProject/chess_rook_king/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/radosalvfilipov/CLionProjects/simple_chess/cmake-build-debug/CMakeFiles/chess_rook_king.dir
+/home/radosalvfilipov/CLionProjects/simple_chess/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/radosalvfilipov/CLionProjects/simple_chess/cmake-build-debug/CMakeFiles/rebuild_cache.dir

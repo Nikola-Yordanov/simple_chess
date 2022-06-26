@@ -42,3 +42,30 @@ weight king_rook_mate(enum color color)
 
     return 10 * eval;
 }
+
+struct position find_piece(enum type piece, enum color color)
+{
+    for(struct position pos = {0, 0};pos.y < SIZE;pos.y++)
+        for(;pos.x < SIZE;pos.x++)
+            if(board[pos.y][pos.x].type == piece && board[pos.y][pos.x].color == color)
+                return pos;
+}
+
+weight evaluate_piece_move(const struct position *pos)
+{
+    int danger_squares = 0, defends = 0;
+    struct square *attacked_square, *moved_piece_square = &board[pos->y][pos->x];
+
+    struct move move = {*pos, *pos};
+    while(piece[board[pos->y][pos->x].type].enum_move(pos, &move))
+    {
+        attacked_square = &board[move.to.y][move.to.x];
+        if(attacked_square->type != empty)
+        {
+            defends += (attacked_square->color == moved_piece_square->color);
+            danger_squares += (attacked_square->color != moved_piece_square->color);
+        }
+    }
+
+    return 3*(danger_squares + defends);
+}
